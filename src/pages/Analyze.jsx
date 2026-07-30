@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ScanHistory from "../components/report/ScanHistory";
+import ThreatConfidence from "../components/report/ThreatConfidence";
 import {
   ShieldCheck,
   Loader2,
@@ -350,10 +351,21 @@ setFinished(true);
         </div>
 
         {/* AI Report */}
-        <div className="mt-8 grid gap-6 xl:grid-cols-2">
-          <AIExplanation report={report} />
-          <Recommendations report={report} />
-        </div>
+        {/* AI Report */}
+
+<div className="mt-8 grid gap-6 xl:grid-cols-3">
+
+  <div className="xl:col-span-2">
+    <AIExplanation report={report} />
+  </div>
+
+  <ThreatConfidence report={report} />
+
+</div>
+
+<div className="mt-6">
+  <Recommendations report={report} />
+</div>
 
         {/* Threat Indicators */}
         <div className="mt-8 grid gap-6 xl:grid-cols-2">
