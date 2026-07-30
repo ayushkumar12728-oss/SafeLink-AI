@@ -6,6 +6,7 @@ import HowItWorks from "../components/home/HowItWorks";
 import DashboardPreview from "../components/home/DashboardPreview";
 import Features from "../components/home/Features";
 import AIAnalyst from "../components/home/AIAnalyst";
+import Statistics from "../components/home/Statistics";
 
 export default function Home() {
   return (

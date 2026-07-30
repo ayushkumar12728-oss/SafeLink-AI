@@ -10,7 +10,10 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import LiveStats from "./LiveStats";
+
 export default function Hero() {
+  
   return (
     <section className="relative overflow-hidden pt-24 pb-16 sm:pt-28 lg:pt-32 lg:pb-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -63,20 +66,7 @@ export default function Hero() {
               ))}
             </div>
             {/* Stats */}
-            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-              <Stat
-                number="99.8%"
-                label="Accuracy"
-              />
-              <Stat
-                number="1.2M+"
-                label="URLs Scanned"
-              />
-              <Stat
-                number="52K+"
-                label="Threats Blocked"
-              />
-            </div>
+           <LiveStats />
           </motion.div>
           {/* RIGHT */}
           <motion.div
