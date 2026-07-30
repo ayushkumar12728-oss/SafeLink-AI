@@ -1,114 +1,168 @@
-def calculate_risk(
-    ssl_info,
-    whois_info,
-    dns_info,
-    http_info,
-    virustotal_info,
-    urlscan_info,
-):
+from urllib.parse import urlparse
+import re
+
+
+SUSPICIOUS_KEYWORDS = [
+    "login",
+    "verify",
+    "secure",
+    "update",
+    "bank",
+    "wallet",
+    "crypto",
+    "bonus",
+    "gift",
+    "reward",
+    "free",
+    "earn",
+    "investment",
+    "ads",
+    "airdrop",
+]
+
+
+def calculate_risk(ssl, whois, dns, http, vt, urlscan, url=None):
     score = 0
     reasons = []
 
-    # ---------------- SSL ----------------
-    if not ssl_info.get("valid", False):
-        score += 25
-        reasons.append("SSL certificate is invalid or missing.")
+    # -----------------------
+    # SSL
+    # -----------------------
+    if not ssl.get("valid"):
+        score += 30
+        reasons.append("Invalid or missing SSL certificate.")
 
-    # ---------------- WHOIS ----------------
-    age_days = whois_info.get("age_days", 3650)
+    # -----------------------
+    # Domain Age
+    # -----------------------
+    age = whois.get("age_days")
 
-    if age_days < 30:
-        score += 25
-        reasons.append("Domain registered less than 30 days ago.")
+    if isinstance(age, int):
+        if age < 30:
+            score += 35
+            reasons.append("Domain registered within the last month.")
 
-    elif age_days < 180:
-        score += 15
-        reasons.append("Recently registered domain.")
+        elif age < 180:
+            score += 20
+            reasons.append("Recently registered domain.")
 
-    # ---------------- VirusTotal ----------------
-    malicious = virustotal_info.get("malicious", 0)
-    suspicious = virustotal_info.get("suspicious", 0)
-
-    if malicious > 0:
-        score += min(40, malicious * 8)
-        reasons.append(
-            f"{malicious} VirusTotal engine(s) flagged the URL as malicious."
-        )
-
-    elif suspicious > 0:
-        score += min(20, suspicious * 5)
-        reasons.append(
-            f"{suspicious} VirusTotal engine(s) marked the URL as suspicious."
-        )
-
-    # ---------------- URLScan ----------------
-    if urlscan_info.get("available"):
-
-        verdict = urlscan_info.get("overall_verdict", {})
-
-        if verdict.get("malicious"):
-            score += 30
-            reasons.append("URLScan classified the website as malicious.")
-
-        elif verdict.get("score", 0) > 50:
-            score += 15
-            reasons.append("URLScan reputation score is elevated.")
-
-    # ---------------- HTTP ----------------
-    redirects = http_info.get("redirect_count", 0)
-
-    if redirects > 5:
-        score += 10
-        reasons.append("Website performs excessive redirects.")
-
-    status = http_info.get("status_code")
-
-    if status in [403, 404, 500]:
-        score += 5
-        reasons.append(f"Unexpected HTTP status ({status}).")
-
-    # ---------------- Security Headers ----------------
-    security_headers = [
-        "strict_transport_security",
-        "content_security_policy",
-        "x_frame_options",
-        "x_content_type_options",
-    ]
-
-    missing = sum(
-        1 for header in security_headers
-        if not http_info.get(header)
-    )
-
-    if missing == 4:
-        score += 5
-        reasons.append("All major HTTP security headers are missing.")
-
-    elif missing >= 2:
-        score += 2
-        reasons.append("Some recommended HTTP security headers are missing.")
-
-    # ---------------- Final Score ----------------
-    score = max(0, min(score, 100))
-
-    if score <= 20:
-        level = "Low"
-        color = "green"
-
-    elif score <= 50:
-        level = "Medium"
-        color = "yellow"
-
-    elif score <= 80:
-        level = "High"
-        color = "orange"
+        elif age < 365:
+            score += 10
 
     else:
+        score += 15
+        reasons.append("Domain age unavailable.")
+
+    # -----------------------
+    # VirusTotal
+    # -----------------------
+    score += vt.get("malicious", 0) * 25
+    score += vt.get("suspicious", 0) * 10
+
+    if vt.get("malicious", 0) > 0:
+        reasons.append("VirusTotal detected malicious activity.")
+
+    if vt.get("suspicious", 0) > 0:
+        reasons.append("VirusTotal marked URL as suspicious.")
+
+    # -----------------------
+    # URLScan
+    # -----------------------
+    verdict = urlscan.get("overall_verdict", {})
+
+    if verdict.get("malicious"):
+        score += 40
+        reasons.append("URLScan reported malicious behaviour.")
+
+    score += verdict.get("score", 0)
+
+    # -----------------------
+    # HTTP Security Headers
+    # -----------------------
+    missing_headers = http.get("missing_security_headers", [])
+
+    if missing_headers:
+        score += min(len(missing_headers) * 3, 15)
+        reasons.append("Important HTTP security headers are missing.")
+
+    # -----------------------
+    # DNS
+    # -----------------------
+    if not dns.get("available", True):
+        score += 10
+        reasons.append("DNS lookup failed.")
+
+    # -----------------------
+    # Suspicious Keywords
+    # -----------------------
+    if url:
+        host = urlparse(url).netloc.lower()
+
+        for word in SUSPICIOUS_KEYWORDS:
+            if word in host:
+                score += 8
+                reasons.append(
+                    f"Suspicious keyword detected: {word}"
+                )
+
+    # -----------------------
+    # Excessive Hyphens
+    # -----------------------
+    if url:
+        host = urlparse(url).netloc
+
+        hyphen_count = host.count("-")
+
+        if hyphen_count >= 3:
+            score += 10
+            reasons.append(
+                "Domain contains many hyphens."
+            )
+
+    # -----------------------
+    # Long Domain
+    # -----------------------
+    if url:
+        host = urlparse(url).netloc
+
+        if len(host) > 35:
+            score += 8
+            reasons.append(
+                "Unusually long domain name."
+            )
+
+    # -----------------------
+    # IP Address URL
+    # -----------------------
+    if url:
+        host = urlparse(url).hostname or ""
+
+        if re.match(r"^\d+\.\d+\.\d+\.\d+$", host):
+            score += 35
+            reasons.append(
+                "Website uses an IP address instead of a domain."
+            )
+
+    # -----------------------
+    # Final Risk Level
+    # -----------------------
+    score = min(score, 100)
+
+    if score >= 80:
         level = "Critical"
         color = "red"
 
-    if not reasons:
-        reasons.append("No significant security risks detected.")
+    elif score >= 60:
+        level = "High"
+        color = "orange"
+
+    elif score >= 35:
+        level = "Medium"
+        color = "yellow"
+
+    else:
+        level = "Low"
+        color = "green"
 
     return {
         "score": score,

@@ -121,13 +121,14 @@ async def scan_url(payload: dict):
     # ----------------------------
 
     risk = calculate_risk(
-        ssl_info,
-        whois_info,
-        dns_info,
-        http_info,
-        virustotal_info,
-        urlscan_info,
-    )
+    ssl_info,
+    whois_info,
+    dns_info,
+    http_info,
+    virustotal_info,
+    urlscan_info,
+    normalized_url,
+)
 
     ai = generate_ai_summary(
         ssl_info,
