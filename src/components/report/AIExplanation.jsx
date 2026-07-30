@@ -5,13 +5,50 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+function Reason({ text }) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-800/30 p-4">
+      <CheckCircle2
+        className="mt-0.5 text-green-400 flex-shrink-0"
+        size={18}
+      />
+
+      <span className="text-slate-300 leading-6">
+        {text}
+      </span>
+    </div>
+  );
+}
+
 export default function AIExplanation({ report }) {
   if (!report) return null;
 
-  const reasons = report.risk?.reasons || [];
+  const risk = report.risk || {};
+  const ai = report.ai || {};
+
+  const score = risk.score ?? 0;
+  const level = risk.level ?? "Unknown";
+  const reasons = risk.reasons ?? [];
+
+  const summary =
+    ai.summary ??
+    "No AI summary is currently available for this scan.";
+
+  const recommendation =
+    ai.recommendation ??
+    "No recommendation is available.";
+
+  const badgeColor = {
+    Low: "bg-green-500/20 text-green-400",
+    Medium: "bg-yellow-500/20 text-yellow-400",
+    High: "bg-orange-500/20 text-orange-400",
+    Critical: "bg-red-500/20 text-red-400",
+  }[level] || "bg-slate-700 text-slate-300";
 
   return (
     <div className="rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-lg">
+
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="rounded-xl bg-blue-500/10 p-3">
@@ -29,34 +66,39 @@ export default function AIExplanation({ report }) {
           </div>
         </div>
 
-        <span className="rounded-full bg-blue-500/20 px-3 py-1 text-xs font-semibold text-blue-400">
-          AI Powered
+        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeColor}`}>
+          {level}
         </span>
       </div>
 
+      {/* Risk Cards */}
       <div className="mt-8 grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-800/40 p-4">
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-800/40 p-5">
           <p className="text-xs uppercase tracking-wide text-slate-400">
             Risk Score
           </p>
 
           <h3 className="mt-2 text-3xl font-bold text-blue-400">
-            {report.risk.score}/100
+            {score}/100
           </h3>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-800/40 p-4">
+        <div className="rounded-2xl border border-slate-800 bg-slate-800/40 p-5">
           <p className="text-xs uppercase tracking-wide text-slate-400">
-            Risk Level
+            Threat Level
           </p>
 
-          <h3 className="mt-2 text-3xl font-bold text-green-400">
-            {report.risk.level}
+          <h3 className="mt-2 text-3xl font-bold">
+            {level}
           </h3>
         </div>
+
       </div>
 
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-800/40 p-5">
+      {/* AI Summary */}
+      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-800/40 p-6">
+
         <div className="flex items-center gap-2">
           <Brain className="text-blue-400" size={20} />
 
@@ -66,37 +108,61 @@ export default function AIExplanation({ report }) {
         </div>
 
         <p className="mt-4 leading-7 text-slate-300">
-          {report.ai.summary}
+          {summary}
         </p>
+
       </div>
 
-      <div className="mt-6 space-y-4">
-        {reasons.map((reason) => (
-          <Reason key={reason} text={reason} />
-        ))}
+      {/* Detection Reasons */}
+      <div className="mt-8">
+
+        <h3 className="mb-4 text-lg font-semibold">
+          Detection Reasons
+        </h3>
+
+        {reasons.length > 0 ? (
+          <div className="space-y-4">
+            {reasons.map((reason, index) => (
+              <Reason
+                key={index}
+                text={reason}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4 text-slate-400">
+            No significant security issues were detected.
+          </div>
+        )}
+
       </div>
 
-      <div className="mt-8 rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
-        <div className="flex items-center gap-3">
-          <ShieldAlert className="text-red-400" />
+      {/* Recommendation */}
+      <div className="mt-8 rounded-2xl border border-red-500/20 bg-red-500/10 p-5">
 
-          <p className="text-sm leading-6 text-slate-300">
-            {report.ai.recommendation}
-          </p>
+        <div className="flex items-start gap-3">
+
+          <ShieldAlert
+            className="mt-1 text-red-400 flex-shrink-0"
+            size={20}
+          />
+
+          <div>
+
+            <h3 className="font-semibold text-red-400">
+              AI Recommendation
+            </h3>
+
+            <p className="mt-2 leading-6 text-slate-300">
+              {recommendation}
+            </p>
+
+          </div>
+
         </div>
+
       </div>
-    </div>
-  );
-}
 
-function Reason({ text }) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-800/30 p-4">
-      <CheckCircle2 className="text-green-400" size={18} />
-
-      <span className="text-slate-300">
-        {text}
-      </span>
     </div>
   );
 }

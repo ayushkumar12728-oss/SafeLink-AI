@@ -4,30 +4,55 @@ import {
   Building2,
   Server,
   Clock3,
+  ShieldCheck,
 } from "lucide-react";
+
+function Info({ icon, title, value }) {
+  return (
+    <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg bg-slate-800 p-2">
+          {icon}
+        </div>
+
+        <span className="font-medium">
+          {title}
+        </span>
+      </div>
+
+      <span className="max-w-[55%] break-all text-right text-slate-400">
+        {value}
+      </span>
+    </div>
+  );
+}
 
 export default function DomainInfo({ report }) {
   if (!report) return null;
 
-  const whois = report.whois || {};
-  const dns = report.dns || {};
-  const http = report.http || {};
+  const whois = report.whois ?? {};
+  const dns = report.dns ?? {};
+  const http = report.http ?? {};
+  const ssl = report.ssl ?? {};
+
+  const ageDays = whois.age_days;
+
+  const domainAge =
+    typeof ageDays === "number"
+      ? `${Math.floor(ageDays / 365)} year(s)`
+      : "Unknown";
 
   return (
     <div className="rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-lg">
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold">
+          Domain Information
+        </h2>
 
-        <div>
-          <h2 className="text-2xl font-bold">
-            Domain Information
-          </h2>
-
-          <p className="text-sm text-slate-400 mt-1">
-            Registration and hosting details
-          </p>
-        </div>
-
+        <p className="mt-1 text-sm text-slate-400">
+          Registration, hosting and certificate details
+        </p>
       </div>
 
       <div className="space-y-5">
@@ -53,11 +78,7 @@ export default function DomainInfo({ report }) {
         <Info
           icon={<Clock3 className="h-5 w-5 text-yellow-400" />}
           title="Domain Age"
-          value={
-            whois.domain_age_years != null
-              ? `${whois.domain_age_years} year(s)`
-              : "Unknown"
-          }
+          value={domainAge}
         />
 
         <Info
@@ -78,30 +99,13 @@ export default function DomainInfo({ report }) {
           value={http.server || "Unknown"}
         />
 
-      </div>
-    </div>
-  );
-}
-
-function Info({ icon, title, value }) {
-  return (
-    <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-
-      <div className="flex items-center gap-3">
-
-        <div className="rounded-lg bg-slate-800 p-2">
-          {icon}
-        </div>
-
-        <span className="font-medium">
-          {title}
-        </span>
+        <Info
+          icon={<ShieldCheck className="h-5 w-5 text-green-400" />}
+          title="SSL Certificate"
+          value={ssl.valid ? "Valid" : "Invalid"}
+        />
 
       </div>
-
-      <span className="max-w-[55%] text-right text-slate-400 break-all">
-        {value}
-      </span>
 
     </div>
   );

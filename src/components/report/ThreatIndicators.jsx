@@ -1,152 +1,125 @@
 import {
-  AlertTriangle,
+  ShieldCheck,
   ShieldAlert,
-  Globe,
-  Clock3,
-  Lock,
-  CheckCircle2,
+  AlertTriangle,
+  XCircle,
 } from "lucide-react";
+
+function Indicator({ title, value, status }) {
+  let icon;
+  let color;
+
+  switch (status) {
+    case "safe":
+      icon = <ShieldCheck size={18} className="text-green-400" />;
+      color = "text-green-400";
+      break;
+
+    case "warning":
+      icon = <AlertTriangle size={18} className="text-yellow-400" />;
+      color = "text-yellow-400";
+      break;
+
+    case "danger":
+      icon = <XCircle size={18} className="text-red-400" />;
+      color = "text-red-400";
+      break;
+
+    default:
+      icon = <ShieldAlert size={18} className="text-slate-400" />;
+      color = "text-slate-400";
+  }
+
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-800/30 p-4">
+      <div>
+        <p className="text-sm text-slate-400">{title}</p>
+        <h3 className={`mt-1 font-semibold ${color}`}>{value}</h3>
+      </div>
+
+      <div>{icon}</div>
+    </div>
+  );
+}
 
 export default function ThreatIndicators({ report }) {
   if (!report) return null;
 
-  const indicators = [];
+  const ssl = report.ssl || {};
+  const whois = report.whois || {};
+  const vt = report.virustotal || {};
+  const urlscan = report.urlscan || {};
 
-  // Backend risk reasons
-  report?.risk?.reasons?.forEach((reason) => {
-    indicators.push({
-      title: reason,
-      desc: "Detected by SafeLink AI risk engine.",
-      severity:
-        report.risk.level === "High"
-          ? "High"
-          : report.risk.level === "Medium"
-          ? "Medium"
-          : "Low",
-      icon: <AlertTriangle className="h-6 w-6 text-red-400" />,
-      color:
-        report.risk.level === "High"
-          ? "bg-red-500/20 text-red-400 border-red-500/30"
-          : report.risk.level === "Medium"
-          ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-          : "bg-green-500/20 text-green-400 border-green-500/30",
-    });
-  });
-
-  // SSL
-  if (report?.ssl && report.ssl.valid === false) {
-    indicators.push({
-      title: "SSL Certificate Invalid",
-      desc: "HTTPS certificate could not be verified.",
-      severity: "High",
-      icon: <Lock className="h-6 w-6 text-red-400" />,
-      color: "bg-red-500/20 text-red-400 border-red-500/30",
-    });
-  }
-
-  // WHOIS
-  if (
-    report?.whois &&
-    (report.whois.privacy_protected || report.whois.hidden)
-  ) {
-    indicators.push({
-      title: "WHOIS Privacy Enabled",
-      desc: "Registrant details are hidden.",
-      severity: "Medium",
-      icon: <Globe className="h-6 w-6 text-blue-400" />,
-      color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    });
-  }
-
-  // Recently registered
-  if (
-    report?.whois?.domain_age_years !== undefined &&
-    report.whois.domain_age_years < 1
-  ) {
-    indicators.push({
-      title: "Recently Registered Domain",
-      desc: `Domain age: ${report.whois.domain_age_years} year(s).`,
-      severity: "Medium",
-      icon: <Clock3 className="h-6 w-6 text-yellow-400" />,
-      color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    });
-  }
+  const ageDays = whois.age_days ?? 0;
 
   return (
     <div className="rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-lg">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-2xl font-bold">Threat Indicators</h2>
+      <h2 className="text-2xl font-bold">
+        Threat Indicators
+      </h2>
 
-          <p className="mt-1 text-sm text-slate-400">
-            Risk signals identified during analysis
-          </p>
-        </div>
+      <p className="mt-2 text-sm text-slate-400">
+        Security signals collected during analysis
+      </p>
 
-        <div className="rounded-xl bg-red-500/10 px-4 py-2">
-          <span className="text-red-400 font-semibold">
-            {indicators.length} Indicator
-            {indicators.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-      </div>
+      <div className="mt-8 space-y-4">
 
-      {indicators.length === 0 ? (
-        <div className="rounded-2xl border border-green-700 bg-green-900/20 p-6 text-center">
-          <ShieldAlert className="mx-auto mb-3 h-10 w-10 text-green-400" />
+        <Indicator
+          title="SSL Certificate"
+          value={ssl.valid ? "Valid" : "Invalid"}
+          status={ssl.valid ? "safe" : "danger"}
+        />
 
-          <h3 className="text-lg font-semibold text-green-400">
-            No Major Threat Indicators
-          </h3>
+        <Indicator
+          title="Domain Age"
+          value={
+            whois.available
+              ? `${Math.floor(ageDays / 365)} Years`
+              : "Unknown"
+          }
+          status={
+            ageDays >= 365
+              ? "safe"
+              : ageDays > 30
+              ? "warning"
+              : "danger"
+          }
+        />
 
-          <p className="mt-2 text-sm text-slate-400">
-            SafeLink AI did not detect any significant phishing indicators.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {indicators.map((item, index) => (
-            <div
-              key={index}
-              className="rounded-2xl border border-slate-800 bg-slate-800/40 p-5 transition-all duration-300 hover:border-blue-500 hover:bg-slate-800"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex gap-4">
-                  <div className="rounded-xl bg-slate-900 p-3">
-                    {item.icon}
-                  </div>
+        <Indicator
+          title="VirusTotal"
+          value={
+            vt.available
+              ? `${vt.malicious} Malicious • ${vt.suspicious} Suspicious`
+              : "Unavailable"
+          }
+          status={
+            vt.malicious > 0
+              ? "danger"
+              : vt.suspicious > 0
+              ? "warning"
+              : "safe"
+          }
+        />
 
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {item.title}
-                    </h3>
+        <Indicator
+          title="URLScan"
+          value={
+            urlscan.available
+              ? urlscan.overall_verdict?.malicious
+                ? "Malicious"
+                : "No malicious behaviour"
+              : "Unavailable"
+          }
+          status={
+            urlscan.available
+              ? urlscan.overall_verdict?.malicious
+                ? "danger"
+                : "safe"
+              : "warning"
+          }
+        />
 
-                    <p className="mt-1 text-sm leading-6 text-slate-400">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-
-                <span
-                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${item.color}`}
-                >
-                  {item.severity}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-8 rounded-2xl bg-slate-800/60 p-4">
-        <div className="flex items-center gap-3">
-          <CheckCircle2 className="text-green-400" />
-
-          <p className="text-sm text-slate-300">
-            Generated using SSL, WHOIS, DNS, HTTP checks, VirusTotal,
-            URLScan, and the SafeLink AI risk engine.
-          </p>
-        </div>
       </div>
     </div>
   );

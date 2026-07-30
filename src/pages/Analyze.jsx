@@ -249,10 +249,12 @@ export default function Analyze() {
 
   const sslValue = report.ssl?.valid ? "Valid" : "Invalid";
 
-  const domainAgeValue =
-    report.whois?.available && report.whois?.domain_age_years != null
-      ? `${report.whois.domain_age_years} Years`
-      : "Unknown";
+ const ageDays = report.whois?.age_days;
+
+const domainAgeValue =
+  report.whois?.available && typeof ageDays === "number"
+    ? `${Math.floor(ageDays / 365)} Years`
+    : "Unknown";
 
   const vtMalicious = report.virustotal?.malicious ?? 0;
   const vtValue =

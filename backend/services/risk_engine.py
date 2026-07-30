@@ -6,86 +6,90 @@ def calculate_risk(
     virustotal_info,
     urlscan_info,
 ):
-
     score = 0
     reasons = []
 
-    # ---------- SSL ----------
+    # ---------------- SSL ----------------
     if not ssl_info.get("valid", False):
         score += 25
-        reasons.append("Invalid SSL certificate")
+        reasons.append("SSL certificate is invalid or missing.")
 
-    # ---------- WHOIS ----------
-    age = whois_info.get("domain_age_days", 0)
+    # ---------------- WHOIS ----------------
+    age_days = whois_info.get("age_days", 3650)
 
-    if age < 30:
+    if age_days < 30:
         score += 25
-        reasons.append("Domain registered less than 30 days ago")
+        reasons.append("Domain registered less than 30 days ago.")
 
-    elif age < 180:
+    elif age_days < 180:
         score += 15
-        reasons.append("Recently registered domain")
+        reasons.append("Recently registered domain.")
 
-    # ---------- VirusTotal ----------
+    # ---------------- VirusTotal ----------------
     malicious = virustotal_info.get("malicious", 0)
     suspicious = virustotal_info.get("suspicious", 0)
 
     if malicious > 0:
-        score += 35
+        score += min(40, malicious * 8)
         reasons.append(
-            f"{malicious} VirusTotal engine(s) flagged this website as malicious"
+            f"{malicious} VirusTotal engine(s) flagged the URL as malicious."
         )
 
-    if suspicious > 0:
-        score += 15
+    elif suspicious > 0:
+        score += min(20, suspicious * 5)
         reasons.append(
-            f"{suspicious} VirusTotal engine(s) marked this website as suspicious"
+            f"{suspicious} VirusTotal engine(s) marked the URL as suspicious."
         )
 
-    # ---------- URLScan ----------
+    # ---------------- URLScan ----------------
     if urlscan_info.get("available"):
 
         verdict = urlscan_info.get("overall_verdict", {})
 
         if verdict.get("malicious"):
             score += 30
-            reasons.append("URLScan detected malicious behaviour")
+            reasons.append("URLScan classified the website as malicious.")
 
         elif verdict.get("score", 0) > 50:
             score += 15
-            reasons.append("URLScan reputation score is elevated")
+            reasons.append("URLScan reputation score is elevated.")
 
-    # ---------- Redirects ----------
+    # ---------------- HTTP ----------------
     redirects = http_info.get("redirect_count", 0)
 
     if redirects > 5:
         score += 10
-        reasons.append("Website redirects multiple times")
+        reasons.append("Website performs excessive redirects.")
 
-    # ---------- HTTP Status ----------
-    if http_info.get("status_code") in [403, 404, 500]:
+    status = http_info.get("status_code")
+
+    if status in [403, 404, 500]:
         score += 5
-        reasons.append("Unexpected HTTP response")
+        reasons.append(f"Unexpected HTTP status ({status}).")
 
-    # ---------- Security Headers ----------
-    headers = [
+    # ---------------- Security Headers ----------------
+    security_headers = [
         "strict_transport_security",
         "content_security_policy",
         "x_frame_options",
         "x_content_type_options",
     ]
 
-    missing = sum(1 for h in headers if not http_info.get(h))
+    missing = sum(
+        1 for header in security_headers
+        if not http_info.get(header)
+    )
 
     if missing == 4:
         score += 5
-        reasons.append("All important HTTP security headers are missing")
+        reasons.append("All major HTTP security headers are missing.")
 
-    elif missing == 3:
+    elif missing >= 2:
         score += 2
-        reasons.append("Several HTTP security headers are missing")
+        reasons.append("Some recommended HTTP security headers are missing.")
 
-    score = min(score, 100)
+    # ---------------- Final Score ----------------
+    score = max(0, min(score, 100))
 
     if score <= 20:
         level = "Low"
@@ -104,11 +108,11 @@ def calculate_risk(
         color = "red"
 
     if not reasons:
-        reasons.append("No significant security risks detected")
+        reasons.append("No significant security risks detected.")
 
     return {
         "score": score,
         "level": level,
         "color": color,
-        "reasons": reasons
+        "reasons": reasons,
     }

@@ -1,51 +1,115 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Clean the URL before sending it to FastAPI
-const cleanUrl = (inputUrl) => {
-  if (!inputUrl) return '';
-  let url = inputUrl.trim();
-  
-  // Strip trailing :1 or invalid ports at the end of the string
-  url = url.replace(/:\d+$/, ''); 
+/**
+ * Backend URL
+ *
+ * Local Development:
+ * VITE_API_URL=http://127.0.0.1:8000
+ *
+ * Production:
+ * VITE_API_URL=https://safelink-ai-d5f8.onrender.com
+ */
+const BACKEND_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://safelink-ai-d5f8.onrender.com";
 
+/**
+ * Clean and normalize URL before sending it to backend.
+ */
+function cleanUrl(input) {
+  if (!input) return "";
+
+  let url = input.trim();
+
+  // Remove accidental trailing ports like :1
+  url = url.replace(/:\d+$/, "");
+
+  // Add https:// if protocol is missing
   if (!/^https?:\/\//i.test(url)) {
     url = `https://${url}`;
   }
+
   return url;
-};
+}
 
-const BACKEND_URL = 'https://safelink-ai-d5f8.onrender.com';
-
-const postScan = (sanitizedUrl, timeout) =>
-  axios.post(
+/**
+ * Internal POST helper
+ */
+async function postScan(url, timeout = 15000) {
+  return axios.post(
     `${BACKEND_URL}/api/scan`,
-    { url: sanitizedUrl },
     {
-      headers: { 'Content-Type': 'application/json' },
-      timeout
+      url,
+    },
+    {
+      timeout,
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   );
+}
 
-// Inside your scan handle function:
-export const scanURL = async (userInput) => {
+/**
+ * Scan a URL
+ */
+export async function scanURL(userInput) {
   const sanitizedUrl = cleanUrl(userInput);
 
+  if (!sanitizedUrl) {
+    throw new Error("Please enter a valid URL.");
+  }
+
   try {
-    // First attempt: assume the backend is warm.
+    // First attempt
     const response = await postScan(sanitizedUrl, 15000);
+
     return response.data;
   } catch (err) {
-    // If the first attempt timed out or failed to connect, the Render free-tier
-    // instance was likely asleep and is now waking up. Retry once with a much
-    // longer timeout instead of surfacing a hard failure immediately.
-    const isTimeoutOrNetworkError =
-      err.code === 'ECONNABORTED' || !err.response;
+    const shouldRetry =
+      err.code === "ECONNABORTED" ||
+      err.code === "ERR_NETWORK" ||
+      !err.response;
 
-    if (!isTimeoutOrNetworkError) {
-      throw err;
+    // Retry once (Render cold start)
+    if (shouldRetry) {
+      try {
+        const retry = await postScan(sanitizedUrl, 45000);
+        return retry.data;
+      } catch (retryErr) {
+        throw new Error(
+          retryErr.response?.data?.detail ||
+            retryErr.message ||
+            "Backend is currently unavailable."
+        );
+      }
     }
 
-    const response = await postScan(sanitizedUrl, 45000);
-    return response.data;
+    throw new Error(
+      err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to analyze the website."
+    );
   }
+}
+
+/**
+ * Health Check
+ */
+export async function checkBackend() {
+  try {
+    const response = await axios.get(`${BACKEND_URL}/docs`, {
+      timeout: 5000,
+    });
+
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+export default {
+  scanURL,
+  checkBackend,
 };

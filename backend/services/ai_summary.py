@@ -4,57 +4,76 @@ def generate_ai_summary(
     http_info,
     virustotal_info,
     urlscan_info,
-    risk_info
+    risk_info,
 ):
-
     paragraphs = []
 
-    if risk_info["level"] == "Low":
-        opening = "This website appears to be legitimate based on the collected security signals."
+    # ---------------- Opening ----------------
+    level = risk_info.get("level", "Low")
 
-    elif risk_info["level"] == "Medium":
-        opening = "This website shows a few warning signs. Exercise caution before interacting with it."
-
-    elif risk_info["level"] == "High":
-        opening = "This website presents multiple security concerns and should be approached carefully."
-
+    if level == "Low":
+        paragraphs.append(
+            "This website appears to be legitimate based on the collected security signals."
+        )
+    elif level == "Medium":
+        paragraphs.append(
+            "This website shows a few warning signs. Exercise caution before interacting with it."
+        )
+    elif level == "High":
+        paragraphs.append(
+            "This website presents multiple security concerns and should be approached carefully."
+        )
     else:
-        opening = "This website appears highly suspicious and should be avoided."
+        paragraphs.append(
+            "This website appears highly suspicious and should be avoided."
+        )
 
-    paragraphs.append(opening)
-
+    # ---------------- SSL ----------------
     if ssl_info.get("valid"):
         paragraphs.append(
-            f"It uses a valid SSL certificate issued by {ssl_info.get('issuer')}."
+            f"The website uses a valid SSL certificate issued by {ssl_info.get('issuer', 'Unknown')}."
         )
     else:
         paragraphs.append(
             "The SSL certificate could not be verified."
         )
 
-    years = whois_info.get("domain_age_years", 0)
+    # ---------------- Domain Age ----------------
+    age_days = whois_info.get("age_days", 0)
+    years = age_days // 365
 
     if years >= 5:
         paragraphs.append(
-            f"The domain has existed for approximately {years} years, which generally indicates stability."
+            f"The domain has existed for approximately {years} years, indicating long-term stability."
         )
-
-    elif years > 0:
+    elif years >= 1:
         paragraphs.append(
-            f"The domain is only {years} year(s) old."
-        )
-
-    if virustotal_info.get("malicious", 0) == 0:
-        paragraphs.append(
-            "VirusTotal reported no malicious detections."
+            f"The domain has existed for approximately {years} year(s)."
         )
     else:
         paragraphs.append(
-            f"VirusTotal detected {virustotal_info.get('malicious')} malicious engines."
+            "The domain appears to be recently registered."
         )
 
-    if urlscan_info.get("available"):
+    # ---------------- VirusTotal ----------------
+    malicious = virustotal_info.get("malicious", 0)
+    suspicious = virustotal_info.get("suspicious", 0)
 
+    if malicious > 0:
+        paragraphs.append(
+            f"VirusTotal detected {malicious} malicious security engine(s)."
+        )
+    elif suspicious > 0:
+        paragraphs.append(
+            f"VirusTotal reported {suspicious} suspicious detection(s)."
+        )
+    else:
+        paragraphs.append(
+            "VirusTotal reported no malicious detections."
+        )
+
+    # ---------------- URLScan ----------------
+    if urlscan_info.get("available"):
         verdict = urlscan_info.get("overall_verdict", {})
 
         if verdict.get("malicious"):
@@ -66,35 +85,42 @@ def generate_ai_summary(
                 "URLScan did not detect malicious behaviour."
             )
 
-    missing = 0
-
-    for h in [
-        "strict_transport_security",
-        "content_security_policy",
-        "x_frame_options",
-        "x_content_type_options"
-    ]:
-        if not http_info.get(h):
-            missing += 1
+    # ---------------- HTTP Security Headers ----------------
+    missing = sum(
+        1
+        for header in [
+            "strict_transport_security",
+            "content_security_policy",
+            "x_frame_options",
+            "x_content_type_options",
+        ]
+        if not http_info.get(header)
+    )
 
     if missing >= 3:
         paragraphs.append(
-            "Some recommended HTTP security headers are missing."
+            "Several recommended HTTP security headers are missing."
         )
 
-    if risk_info["level"] == "Low":
-        recommendation = "Safe to visit."
-
-    elif risk_info["level"] == "Medium":
-        recommendation = "Proceed carefully and avoid sharing sensitive information."
-
-    elif risk_info["level"] == "High":
-        recommendation = "Avoid entering passwords or financial information."
-
+    # ---------------- Recommendation ----------------
+    if level == "Low":
+        recommendation = (
+            "The website appears safe to visit. Continue using normal online safety practices."
+        )
+    elif level == "Medium":
+        recommendation = (
+            "Proceed carefully and avoid sharing sensitive information unless you trust the website."
+        )
+    elif level == "High":
+        recommendation = (
+            "Avoid entering passwords, banking details, or personal information on this website."
+        )
     else:
-        recommendation = "Do not visit this website."
+        recommendation = (
+            "Do not visit or interact with this website. It presents a high security risk."
+        )
 
     return {
         "summary": " ".join(paragraphs),
-        "recommendation": recommendation
+        "recommendation": recommendation,
     }
