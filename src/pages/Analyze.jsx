@@ -9,7 +9,7 @@ import {
   Globe,
   Bug,
 } from "lucide-react";
-import Scanner from "../components/Scanner";
+import Scanner from "../components/home/Scanner";
 import DownloadReportButton from "../components/report/DownloadReportButton";
 import AIExplanation from "../components/report/AIExplanation";
 import Recommendations from "../components/report/Recommendations";
