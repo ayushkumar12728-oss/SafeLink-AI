@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import ScanHistory from "../components/report/ScanHistory";
 import {
   ShieldCheck,
   Loader2,
@@ -119,12 +120,36 @@ export default function Analyze() {
           setCurrentStep(i);
           await new Promise((resolve) => setTimeout(resolve, 600));
         }
+const data = await scanURL(url);
 
-        const data = await scanURL(url);
-        if (cancelled) return;
+if (cancelled) return;
 
-        setReport(data);
-        setFinished(true);
+// Save scan history
+const history = JSON.parse(localStorage.getItem("scanHistory") || "[]");
+
+const newEntry = {
+  url: data.normalized_url || url,
+  score: data.risk?.score ?? 0,
+  level: data.risk?.level ?? "Unknown",
+  scannedAt: new Date().toISOString(),
+};
+
+// Remove duplicate URLs
+const filteredHistory = history.filter(
+  (item) => item.url !== newEntry.url
+);
+
+// Add newest scan to the top
+filteredHistory.unshift(newEntry);
+
+// Keep only the latest 10 scans
+localStorage.setItem(
+  "scanHistory",
+  JSON.stringify(filteredHistory.slice(0, 10))
+);
+
+setReport(data);
+setFinished(true);
       } catch (err) {
         if (cancelled) return;
         console.error(err);
@@ -263,6 +288,11 @@ export default function Analyze() {
   buttonLabel="Scan Again"
 />
         </div>
+        {/* Recent Scan History */}
+
+<div className="mb-8">
+  <ScanHistory />
+</div>
 
         {/* Header */}
         <div className="mb-8">
