@@ -77,12 +77,7 @@ export default function Navbar() {
             Dashboard
           </button>
 
-          <button
-            onClick={() => scrollToSection("docs")}
-            className="text-slate-300 hover:text-white transition"
-          >
-            Docs
-          </button>
+        
 
           <a
             href="https://github.com/ayushkumar12728-oss/SafeLink-AI"
