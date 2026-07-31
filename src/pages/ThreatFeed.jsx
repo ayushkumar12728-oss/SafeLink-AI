@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-import { threats } from "../data/threatData";
-
 import ThreatHero from "../components/threat/ThreatHero";
 import ThreatSearch from "../components/threat/ThreatSearch";
 import ThreatCategories from "../components/threat/ThreatCategories";
+import { threats } from "../data/threatData";
 
 export default function ThreatFeed() {
   const [selectedThreat, setSelectedThreat] = useState(threats[0]);
