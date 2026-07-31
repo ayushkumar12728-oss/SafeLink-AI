@@ -14,10 +14,36 @@ export default function Navbar() {
   const location = useLocation();
 
   const scrollToSection = (id) => {
-    if (location.pathname !== "/") {
-      navigate(`/#${id}`);
-      return;
-    }
+   const scrollToSection = (id) => {
+  if (location.pathname !== "/") {
+    navigate("/");
+
+    setTimeout(() => {
+      const element = document.getElementById(id);
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 150);
+
+    setOpen(false);
+    return;
+  }
+
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
+  setOpen(false);
+};
 
     const element = document.getElementById(id);
 
@@ -64,11 +90,11 @@ export default function Navbar() {
           </button>
 
           <Link
-            to="/threat-library"
-            className="text-slate-300 hover:text-white transition"
-          >
-            Threat Feed
-          </Link>
+  to="/threat-feed"
+  className="text-slate-300 hover:text-white transition"
+>
+  Threat Feed
+</Link>
 
           <button
             onClick={() => scrollToSection("dashboard")}
@@ -115,14 +141,13 @@ export default function Navbar() {
             Features
           </button>
 
-          <Link
-            to="/threat-library"
-            onClick={() => setOpen(false)}
-            className="block rounded-lg px-3 py-3 text-slate-300 hover:bg-slate-800"
-          >
-            Threat Feed
-          </Link>
-
+         <Link
+  to="/threat-feed"
+  onClick={() => setOpen(false)}
+  className="block rounded-lg px-3 py-3 text-slate-300 hover:bg-slate-800"
+>
+  Threat Feed
+</Link>
           <button
             onClick={() => scrollToSection("dashboard")}
             className="block w-full rounded-lg px-3 py-3 text-left text-slate-300 hover:bg-slate-800"
@@ -130,12 +155,7 @@ export default function Navbar() {
             Dashboard
           </button>
 
-          <button
-            onClick={() => scrollToSection("docs")}
-            className="block w-full rounded-lg px-3 py-3 text-left text-slate-300 hover:bg-slate-800"
-          >
-            Docs
-          </button>
+          
 
           <a
             href="https://github.com/ayushkumar12728-oss/SafeLink-AI"
