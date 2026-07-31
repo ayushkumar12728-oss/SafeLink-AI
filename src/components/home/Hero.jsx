@@ -45,9 +45,9 @@ export default function Hero() {
               DNS,
               and phishing intelligence in seconds.
             </p>
-            <div className="mt-8">
-              <Scanner />
-            </div>
+            <div id="scanner" className="mt-8">
+  <Scanner />
+</div>
             {/* Feature Chips */}
             <div className="mt-6 flex flex-wrap gap-3">
               {[

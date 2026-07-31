@@ -26,7 +26,7 @@ export default function Navbar() {
             block: "start",
           });
         }
-      }, 200);
+      }, 250);
 
       setOpen(false);
       return;
@@ -53,12 +53,10 @@ export default function Navbar() {
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl">
-
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-
           <div className="rounded-xl bg-emerald-500/10 p-2">
             <Shield className="text-emerald-400" size={24} />
           </div>
@@ -72,10 +70,9 @@ export default function Navbar() {
               AI Powered URL Security
             </p>
           </div>
-
         </Link>
 
-        {/* Desktop */}
+        {/* Desktop Navigation */}
         <div className="hidden items-center gap-8 lg:flex">
 
           <button
@@ -114,17 +111,16 @@ export default function Navbar() {
           >
             GitHub
           </a>
-
         </div>
 
-        {/* Desktop Button */}
-        <Link
-          to="/analyze"
+        {/* Analyze Button */}
+        <button
+          onClick={() => scrollToSection("scanner")}
           className="hidden items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 py-3 font-semibold text-black transition hover:scale-105 lg:flex"
         >
           Analyze URL
           <ArrowRight size={18} />
-        </Link>
+        </button>
 
         {/* Mobile Menu Button */}
         <button
@@ -133,7 +129,6 @@ export default function Navbar() {
         >
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
-
       </div>
 
       {/* Mobile Menu */}
@@ -170,14 +165,13 @@ export default function Navbar() {
             Dashboard
           </button>
 
-          <Link
-            to="/analyze"
-            onClick={() => setOpen(false)}
-            className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 font-semibold text-black"
+          <button
+            onClick={() => scrollToSection("scanner")}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 font-semibold text-black"
           >
             Analyze URL
             <ArrowRight size={18} />
-          </Link>
+          </button>
 
           <a
             href="https://github.com/ayushkumar12728-oss/SafeLink-AI"
@@ -187,7 +181,6 @@ export default function Navbar() {
           >
             GitHub
           </a>
-
         </div>
       )}
     </nav>
