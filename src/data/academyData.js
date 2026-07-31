@@ -85,16 +85,34 @@ export const topics = [
 
 export const quizQuestions = [
   {
-    question: "Which URL is suspicious?",
-    answer: "g00gle-login.xyz",
+    question: "Which URL is most likely a phishing website?",
+    options: [
+      "https://google.com",
+      "https://amaz0n-login.xyz",
+      "https://github.com",
+      "https://openai.com",
+    ],
+    answer: 1,
   },
   {
-    question: "Should you share your OTP with bank staff?",
-    answer: "No",
+    question: "Should you share your OTP with anyone?",
+    options: [
+      "Yes",
+      "Only with bank staff",
+      "No",
+      "Only with friends",
+    ],
+    answer: 2,
   },
   {
-    question: "What is the safest password?",
-    answer: "Long & Unique",
+    question: "Which password is the strongest?",
+    options: [
+      "12345678",
+      "password",
+      "Ayush123",
+      "G7#kP!91@Lm",
+    ],
+    answer: 3,
   },
 ];
 
