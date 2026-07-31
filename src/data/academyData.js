@@ -38,25 +38,33 @@ export const learningTracks = [
     title: "Beginner",
     icon: "🌱",
     lessons: 10,
+    level: "Easy",
     description: "Learn cybersecurity fundamentals.",
+    topics: ["Internet Safety", "Passwords", "Safe Browsing"],
   },
   {
     title: "Intermediate",
     icon: "🎣",
     lessons: 12,
+    level: "Medium",
     description: "Detect phishing and online scams.",
+    topics: ["Phishing", "Fake Websites", "UPI Scams"],
   },
   {
     title: "Advanced",
     icon: "🔥",
     lessons: 15,
+    level: "Advanced",
     description: "Network security and malware analysis.",
+    topics: ["Malware", "Networking", "Forensics"],
   },
   {
     title: "AI Security",
     icon: "🤖",
     lessons: 8,
+    level: "AI",
     description: "AI-powered cyber attacks and defense.",
+    topics: ["Deepfakes", "AI Phishing", "Voice Cloning"],
   },
 ];
 
