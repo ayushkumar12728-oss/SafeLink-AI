@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import CyberAcademy from "./pages/CyberAcademy";
 
 import Home from "./pages/Home";
 import Analyze from "./pages/Analyze";
@@ -15,8 +16,10 @@ export default function App() {
   path="/threat-feed"
   element={<ThreatFeed />}
 />
+<Route path="/academy" element={<CyberAcademy />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    
   );
 }
