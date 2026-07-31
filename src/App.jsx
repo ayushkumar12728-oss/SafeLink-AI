@@ -5,11 +5,16 @@ import Home from "./pages/Home";
 import Analyze from "./pages/Analyze";
 import NotFound from "./pages/NotFound";
 import ThreatFeed from "./pages/ThreatFeed";
+import CourseDetails from "./pages/CourseDetails";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+  path="/academy/course/:slug"
+  element={<CourseDetails />}
+/>
         <Route path="/" element={<Home />} />
         <Route path="/analyze" element={<Analyze />} />
        <Route

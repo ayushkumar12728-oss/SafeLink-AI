@@ -4,7 +4,6 @@ import ScanHistory from "../components/report/ScanHistory";
 import ThreatConfidence from "../components/report/ThreatConfidence";
 import {
   ShieldCheck,
-  Loader2,
   CheckCircle2,
   ShieldAlert,
   Lock,
@@ -98,6 +97,7 @@ export default function Analyze() {
   const [finished, setFinished] = useState(false);
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [scanCompleted, setScanCompleted] = useState(false);
   const [error, setError] = useState("");
   const [animatedScore, setAnimatedScore] = useState(0);
 
@@ -150,16 +150,24 @@ localStorage.setItem(
 );
 
 setReport(data);
+setReport(data);
+
+setScanCompleted(true);
+
+await new Promise((resolve) =>
+  setTimeout(resolve, 900)
+);
+
 setFinished(true);
       } catch (err) {
         if (cancelled) return;
         console.error(err);
         setError("Unable to scan this website. Please try again.");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
+  if (!cancelled && !scanCompleted) {
+    setLoading(false);
+  }
+}
     }
 
     analyze();
@@ -213,13 +221,48 @@ setFinished(true);
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#030712] px-4 text-white">
         <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 p-8 text-center shadow-lg">
-          <Loader2 className="mx-auto mb-6 animate-spin text-blue-400" size={48} />
+          <div className="relative mx-auto mb-8 flex h-20 w-20 items-center justify-center">
+
+  {/* Glowing Pulse */}
+  <div className="absolute h-20 w-20 animate-ping rounded-full bg-cyan-500/20"></div>
+
+  {/* Rotating Ring */}
+  <div className="absolute h-16 w-16 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent"></div>
+
+  {/* Shield Icon */}
+  <ShieldCheck
+    size={34}
+    className="relative z-10 text-cyan-400"
+  />
+  
+
+</div>
           <h1 className="text-xl font-bold sm:text-2xl">
-            Scanning {url}
-          </h1>
-          <p className="mt-4 text-slate-400">
-            {scanSteps[currentStep]}
-          </p>
+  Scanning {url}
+</h1>
+
+<p className="mt-2 text-cyan-400 font-medium">
+  🤖 SafeLink AI Engine Active
+</p>
+
+<p className="mt-4 text-sm text-slate-500">
+  Estimated Time: 3 Seconds
+</p>
+
+<div className="mt-5 flex items-center justify-between">
+
+  <p className="text-slate-300">
+    {scanSteps[currentStep]}
+  </p>
+
+  <span className="font-bold text-cyan-400">
+    {Math.round(
+      ((currentStep + 1) / scanSteps.length) * 100
+    )}
+    %
+  </span>
+
+</div>
           <div className="mt-6 h-2 w-full rounded-full bg-slate-800">
             <div
               className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500"
@@ -320,14 +363,42 @@ setFinished(true);
                   "No AI summary was returned for this scan."}
               </p>
             </div>
-            <div className="text-center lg:text-right">
-              <h2 className="text-5xl font-black sm:text-6xl lg:text-7xl">
-                {animatedScore}
-              </h2>
-              <p className="mt-2 text-slate-400">
-                Threat Score
-              </p>
-            </div>
+           <div className="text-center lg:text-right">
+
+  <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6">
+
+    <h2 className="text-6xl font-black sm:text-7xl">
+      {animatedScore}
+    </h2>
+
+    <p className="mt-2 text-slate-400">
+      Threat Score
+    </p>
+
+    <div className="mt-5 h-3 w-56 overflow-hidden rounded-full bg-slate-800">
+
+      <div
+        className={`h-full rounded-full transition-all duration-700 ${
+          animatedScore > 70
+            ? "bg-red-500"
+            : animatedScore > 40
+            ? "bg-yellow-400"
+            : "bg-green-500"
+        }`}
+        style={{
+          width: `${animatedScore}%`,
+        }}
+      />
+
+    </div>
+
+    <p className="mt-3 text-sm text-slate-500">
+      AI Risk Assessment
+    </p>
+
+  </div>
+
+</div>
           </div>
         </div>
 
