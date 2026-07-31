@@ -1,62 +1,97 @@
 export const threats = [
   {
     id: 1,
+    icon: "🎣",
     title: "Fake SBI Banking Portal",
     category: "Phishing",
-    risk: "High",
-    status: "Blocked",
-    time: "2 mins ago",
+    severity: "🔴 High Risk",
     description:
-      "A fake banking website impersonating SBI was detected attempting to steal user credentials.",
+      "A fake SBI banking website was detected attempting to steal usernames, passwords, OTPs and banking credentials.",
+
+    warningSigns: [
+      "Suspicious domain name",
+      "Urgent login request",
+      "Requests OTP or password",
+    ],
   },
+
   {
     id: 2,
+    icon: "🛒",
     title: "Amazon Refund Scam",
     category: "Fraud",
-    risk: "Medium",
-    status: "Monitoring",
-    time: "15 mins ago",
+    severity: "🟡 Medium Risk",
     description:
-      "Users received fake refund emails redirecting to malicious payment pages.",
+      "Fraudsters send fake refund emails asking users to verify payment information through phishing websites.",
+
+    warningSigns: [
+      "Unexpected refund message",
+      "Unknown sender",
+      "Fake payment page",
+    ],
   },
+
   {
     id: 3,
+    icon: "💬",
     title: "WhatsApp Job Scam",
     category: "Social Engineering",
-    risk: "High",
-    status: "Active",
-    time: "28 mins ago",
+    severity: "🔴 High Risk",
     description:
-      "Fraudsters are offering fake online jobs and requesting registration fees.",
+      "Scammers offer fake online jobs and ask victims to pay registration or processing fees.",
+
+    warningSigns: [
+      "Easy money promises",
+      "Registration fee",
+      "Unknown recruiter",
+    ],
   },
+
   {
     id: 4,
+    icon: "🌐",
     title: "Fake Google Login",
     category: "Credential Theft",
-    risk: "High",
-    status: "Blocked",
-    time: "45 mins ago",
+    severity: "🔴 High Risk",
     description:
-      "A cloned Google login page was detected targeting Gmail users.",
+      "A cloned Google login page designed to capture Gmail usernames and passwords.",
+
+    warningSigns: [
+      "Misspelled URL",
+      "Unexpected login request",
+      "Fake Google branding",
+    ],
   },
+
   {
     id: 5,
+    icon: "💳",
     title: "UPI QR Code Scam",
     category: "Financial Fraud",
-    risk: "Medium",
-    status: "Investigating",
-    time: "1 hour ago",
+    severity: "🟡 Medium Risk",
     description:
-      "Attackers are tricking victims into scanning malicious QR codes for payments.",
+      "Attackers trick victims into scanning fake QR codes or approving fraudulent UPI requests.",
+
+    warningSigns: [
+      "Unknown QR code",
+      "Unexpected payment request",
+      "Fake cashback offers",
+    ],
   },
+
   {
     id: 6,
-    title: "SafeLink AI Daily Scan",
+    icon: "🛡️",
+    title: "Verified Safe Website",
     category: "Safe",
-    risk: "Low",
-    status: "Verified",
-    time: "Today",
+    severity: "🟢 Safe",
     description:
-      "No suspicious activity detected for verified domains scanned today.",
+      "This website passed all SafeLink AI security checks including SSL, WHOIS and AI threat analysis.",
+
+    warningSigns: [
+      "Valid SSL Certificate",
+      "Trusted domain",
+      "No phishing indicators",
+    ],
   },
 ];

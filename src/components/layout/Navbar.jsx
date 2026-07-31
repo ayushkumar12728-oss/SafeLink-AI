@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  Shield,
-  Menu,
-  X,
-  ArrowRight,
-} from "lucide-react";
+import { Shield, Menu, X, ArrowRight } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -113,7 +108,7 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Analyze Button */}
+        {/* Desktop Analyze Button */}
         <button
           onClick={() => scrollToSection("scanner")}
           className="hidden items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 py-3 font-semibold text-black transition hover:scale-105 lg:flex"

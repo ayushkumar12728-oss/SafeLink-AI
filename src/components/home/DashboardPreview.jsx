@@ -48,10 +48,13 @@ export default function DashboardPreview() {
               <Download size={18} />
               Download PDF Report
             </button>
-            <button className="flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-4 hover:bg-slate-800">
-              View Live Demo
-              <ArrowRight size={18} />
-            </button>
+            <button
+  onClick={() => alert("🚧 Live Demo feature coming soon!")}
+  className="flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-4 transition hover:bg-slate-800"
+>
+  View Live Demo
+  <ArrowRight size={18} />
+</button>
           </div>
         </motion.div>
       </div>
