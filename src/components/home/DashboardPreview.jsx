@@ -1,259 +1,236 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
-  ShieldAlert,
-  Brain,
   Globe,
-  Activity,
-  Clock3,
-  Download,
+  QrCode,
+  Shield,
+  GraduationCap,
+  BrainCircuit,
+  ShieldCheck,
+  Database,
+  Lock,
   ArrowRight,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
 } from "lucide-react";
 
-export default function DashboardPreview() {
-  return (
-    <section id="dashboard" className="py-28">
-      <div className="mx-auto max-w-7xl px-6">
-        <p className="text-center uppercase tracking-[0.35em] text-blue-400 text-sm">
-          Product Preview
-        </p>
-        <h2 className="mt-4 text-center text-5xl font-black">
-          AI Threat Dashboard
-        </h2>
-        <p className="mx-auto mt-6 max-w-3xl text-center text-slate-400">
-          Every scan generates a comprehensive AI-powered cybersecurity report
-          in less than one second.
-        </p>
+const modules = [
+  {
+    title: "Analyze URL",
+    description: "Detect phishing websites using AI, WHOIS, SSL and threat intelligence.",
+    icon: Globe,
+    color: "text-cyan-400",
+    route: "#scanner",
+    home: true,
+  },
+  {
+    title: "QR Guardian",
+    description: "Upload and verify suspicious QR codes before scanning.",
+    icon: QrCode,
+    color: "text-emerald-400",
+    route: "/qr-scanner",
+  },
+  {
+    title: "Threat Feed",
+    description: "View latest phishing campaigns and cyber threats.",
+    icon: Shield,
+    color: "text-red-400",
+    route: "/threat-feed",
+  },
+  {
+    title: "Cyber Academy",
+    description: "Interactive lessons, quizzes and cyber awareness.",
+    icon: GraduationCap,
+    color: "text-purple-400",
+    route: "/academy",
+  },
+];
 
+const technologies = [
+  {
+    title: "AI Detection",
+    icon: BrainCircuit,
+    color: "text-cyan-400",
+  },
+  {
+    title: "VirusTotal",
+    icon: ShieldCheck,
+    color: "text-emerald-400",
+  },
+  {
+    title: "WHOIS",
+    icon: Database,
+    color: "text-blue-400",
+  },
+  {
+    title: "SSL Analysis",
+    icon: Lock,
+    color: "text-orange-400",
+  },
+];
+
+export default function DashboardPreview() {
+  const navigate = useNavigate();
+
+  const handleClick = (item) => {
+    if (item.home) {
+      const section = document.getElementById("scanner");
+      if (section) {
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+      return;
+    }
+    navigate(item.route);
+  };
+
+  return (
+    <section
+      id="dashboard"
+      className="py-28"
+    >
+      <div className="mx-auto max-w-7xl px-6">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mt-16 rounded-3xl border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-xl"
+          className="text-center"
         >
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            <ThreatScoreCard />
-            <AISummaryCard />
-            <TimelineCard />
-            <IndicatorsCard />
-            <DomainCard />
-            <ConfidenceCard />
+          <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-5 py-2 text-sm text-cyan-400">
+            SafeLink AI Platform
+          </span>
+          <h2 className="mt-6 text-5xl font-black">
+            Everything You Need
+            <span className="block text-cyan-400">
+              To Stay Safe Online
+            </span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-400">
+            SafeLink AI combines URL analysis,
+            QR protection,
+            cyber awareness,
+            and live threat intelligence
+            into one unified cybersecurity platform.
+          </p>
+        </motion.div>
+
+        <div className="mt-20 grid gap-8 md:grid-cols-2">
+          {modules.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: index * 0.12,
+                }}
+                whileHover={{
+                  y: -8,
+                  scale: 1.02,
+                }}
+                onClick={() => handleClick(item)}
+                className="group cursor-pointer rounded-3xl border border-white/10 bg-slate-900/60 p-8 backdrop-blur-xl transition hover:border-cyan-500/30 hover:shadow-[0_0_40px_rgba(34,211,238,.08)]"
+              >
+                <div className="flex items-start justify-between">
+                  <div
+                    className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 ${item.color}`}
+                  >
+                    <Icon size={32} />
+                  </div>
+
+                  <ArrowRight
+                    size={22}
+                    className="text-slate-500 transition duration-300 group-hover:translate-x-1 group-hover:text-cyan-400"
+                  />
+                </div>
+
+                <h3 className="mt-8 text-2xl font-bold text-white">
+                  {item.title}
+                </h3>
+
+                <p className="mt-4 leading-8 text-slate-400">
+                  {item.description}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Powered By */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.25 }}
+          className="mt-24 rounded-3xl border border-white/10 bg-slate-900/60 p-10 backdrop-blur-xl"
+        >
+          <div className="text-center">
+            <h3 className="text-3xl font-bold">
+              Powered By
+            </h3>
+
+            <p className="mt-4 text-slate-400">
+              Multiple security technologies working together
+              to protect you from phishing attacks and online scams.
+            </p>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-4">
-            <button className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-4 font-semibold hover:opacity-90">
-              <Download size={18} />
-              Download PDF Report
-            </button>
-            <button
-  onClick={() => alert("🚧 Live Demo feature coming soon!")}
-  className="flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-4 transition hover:bg-slate-800"
->
-  View Live Demo
-  <ArrowRight size={18} />
-</button>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {technologies.map((tech) => {
+              const Icon = tech.icon;
+              return (
+                <motion.div
+                  key={tech.title}
+                  whileHover={{
+                    y: -6,
+                  }}
+                  className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-center"
+                >
+                  <Icon
+                    size={34}
+                    className={`mx-auto ${tech.color}`}
+                  />
+
+                  <h4 className="mt-5 font-bold text-white">
+                    {tech.title}
+                  </h4>
+                </motion.div>
+              );
+            })}
           </div>
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20 flex flex-col items-center gap-5 sm:flex-row sm:justify-center"
+        >
+          <button
+            onClick={() => {
+              const scanner = document.getElementById("scanner");
+              if (scanner) {
+                scanner.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }
+            }}
+            className="rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-4 font-semibold text-white transition hover:scale-105"
+          >
+            Analyze URL
+          </button>
+
+          <button
+            onClick={() => navigate("/qr-scanner")}
+            className="rounded-2xl border border-slate-700 px-8 py-4 font-semibold transition hover:bg-slate-800"
+          >
+            Open QR Guardian
+          </button>
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function ThreatScoreCard() {
-  return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-3xl bg-slate-800/60 p-7"
-    >
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold">Threat Score</h3>
-        <ShieldAlert className="text-red-500" />
-      </div>
-      <h2 className="mt-6 text-6xl font-black text-red-500">
-        92
-        <span className="text-2xl text-slate-400">/100</span>
-      </h2>
-      <p className="mt-2 text-red-400 font-medium">High Risk</p>
-      <div className="mt-8 h-3 rounded-full bg-slate-700">
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: "92%" }}
-          transition={{ duration: 1 }}
-          className="h-3 rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-400"
-        />
-      </div>
-      <p className="mt-5 text-slate-400">AI Confidence • 98%</p>
-    </motion.div>
-  );
-}
-
-function AISummaryCard() {
-  return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-3xl bg-slate-800/60 p-7"
-    >
-      <div className="flex items-center gap-3">
-        <Brain className="text-blue-400" />
-        <h3 className="text-xl font-bold">AI Analysis</h3>
-      </div>
-      <p className="mt-6 leading-8 text-slate-400">
-        This website closely matches phishing behaviour detected by our AI
-        engine. Multiple indicators including SSL validation, WHOIS records
-        and VirusTotal suggest this URL should not be trusted.
-      </p>
-      <div className="mt-6 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-sm text-blue-300">
-        Recommendation: Avoid entering passwords or financial information.
-      </div>
-    </motion.div>
-  );
-}
-
-function TimelineCard() {
-  const steps = [
-    "URL Validation",
-    "SSL Inspection",
-    "WHOIS Lookup",
-    "VirusTotal",
-    "AI Analysis",
-    "Completed",
-  ];
-
-  return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-3xl bg-slate-800/60 p-7"
-    >
-      <div className="flex items-center gap-3">
-        <Clock3 className="text-cyan-400" />
-        <h3 className="text-xl font-bold">Scan Timeline</h3>
-      </div>
-      <div className="mt-8 space-y-4">
-        {steps.map((step) => (
-          <div key={step} className="flex items-center gap-3">
-            <CheckCircle2 size={18} className="text-green-400" />
-            <span className="text-slate-300">{step}</span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-8 text-sm text-slate-500">Completed in 0.42 sec</p>
-    </motion.div>
-  );
-}
-
-function IndicatorsCard() {
-  const indicators = [
-    {
-      title: "AI Detection",
-      status: "Phishing",
-      icon: <ShieldAlert className="text-red-400" size={18} />,
-    },
-    {
-      title: "SSL Certificate",
-      status: "Invalid",
-      icon: <XCircle className="text-red-400" size={18} />,
-    },
-    {
-      title: "WHOIS",
-      status: "New Domain",
-      icon: <AlertTriangle className="text-yellow-400" size={18} />,
-    },
-    {
-      title: "VirusTotal",
-      status: "31 Vendors",
-      icon: <Activity className="text-cyan-400" size={18} />,
-    },
-  ];
-
-  return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-3xl bg-slate-800/60 p-7"
-    >
-      <h3 className="flex items-center gap-2 text-xl font-bold">
-        <ShieldAlert className="text-red-400" />
-        Threat Indicators
-      </h3>
-      <div className="mt-8 space-y-4">
-        {indicators.map((item) => (
-          <div
-            key={item.title}
-            className="flex items-center justify-between rounded-xl bg-slate-900/60 p-4"
-          >
-            <div>
-              <h4 className="font-semibold">{item.title}</h4>
-              <p className="text-sm text-slate-400">{item.status}</p>
-            </div>
-            {item.icon}
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-function DomainCard() {
-  return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-3xl bg-slate-800/60 p-7"
-    >
-      <h3 className="flex items-center gap-2 text-xl font-bold">
-        <Globe className="text-blue-400" />
-        Domain Information
-      </h3>
-      <div className="mt-8 space-y-5">
-        <InfoRow label="Domain" value="secure-login-example.xyz" />
-        <InfoRow label="Registrar" value="Namecheap" />
-        <InfoRow label="Age" value="2 Days" />
-        <InfoRow label="Country" value="United States" />
-        <InfoRow label="IP Address" value="104.26.xx.xx" />
-      </div>
-    </motion.div>
-  );
-}
-
-function ConfidenceCard() {
-  return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-3xl bg-slate-800/60 p-7"
-    >
-      <div className="flex items-center gap-3">
-        <Brain className="text-blue-400" />
-        <h3 className="text-xl font-bold">AI Confidence</h3>
-      </div>
-      <h2 className="mt-8 text-6xl font-black text-blue-400">98%</h2>
-      <div className="mt-8 h-3 rounded-full bg-slate-700">
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: "98%" }}
-          transition={{ duration: 1.2 }}
-          className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
-        />
-      </div>
-      <p className="mt-6 leading-7 text-slate-400">
-        The AI engine has a very high confidence that this URL matches known
-        phishing behaviour based on multiple security indicators.
-      </p>
-    </motion.div>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div className="flex items-center justify-between border-b border-slate-700 pb-3">
-      <span className="text-slate-400">{label}</span>
-      <span className="font-semibold text-white">{value}</span>
-    </div>
   );
 }

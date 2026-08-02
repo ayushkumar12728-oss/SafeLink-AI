@@ -1,61 +1,126 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Scanner from "./Scanner";
+import LiveStats from "./LiveStats";
 import {
   Shield,
   Globe,
-  ArrowRight,
-  CheckCircle2,
+  QrCode,
+  GraduationCap,
   AlertTriangle,
-  XCircle,
-  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 
-import LiveStats from "./LiveStats";
+const platformCards = [
+  {
+    title: "Analyze URL",
+    description:
+      "Detect phishing websites using AI, VirusTotal, WHOIS and SSL verification.",
+    icon: Globe,
+    button: "Analyze Now",
+    gradient: "from-cyan-500 to-blue-600",
+    route: "#scanner",
+    home: true,
+    color: "text-cyan-400",
+  },
+  {
+    title: "QR Guardian",
+    description:
+      "Upload and verify suspicious QR codes before opening links or making UPI payments.",
+    icon: QrCode,
+    button: "Open Scanner",
+    gradient: "from-emerald-500 to-green-600",
+    route: "/qr-scanner",
+    color: "text-emerald-400",
+  },
+  {
+    title: "Threat Feed",
+    description:
+      "Stay updated with the latest phishing campaigns, scams and cyber attacks.",
+    icon: AlertTriangle,
+    button: "Explore Feed",
+    gradient: "from-red-500 to-orange-500",
+    route: "/threat-feed",
+    color: "text-red-400",
+  },
+  {
+    title: "Cyber Academy",
+    description:
+      "Interactive cybersecurity learning with quizzes and practical lessons.",
+    icon: GraduationCap,
+    button: "Start Learning",
+    gradient: "from-purple-500 to-pink-500",
+    route: "/academy",
+    color: "text-purple-400",
+  },
+];
 
 export default function Hero() {
-  
+  const navigate = useNavigate();
+
+  const handleCardClick = (card) => {
+    if (card.home) {
+      const scanner = document.getElementById("scanner");
+      if (scanner) {
+        scanner.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+      return;
+    }
+    navigate(card.route);
+  };
+
   return (
     <section className="relative overflow-hidden pt-24 pb-16 sm:pt-28 lg:pt-32 lg:pb-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="grid items-center gap-14 lg:grid-cols-2">
           {/* LEFT */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-xs sm:text-sm font-medium text-blue-400">
-              <Shield size={16} />
-              AI Powered Threat Intelligence
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-400">
+              <Shield size={18} />
+              AI Cybersecurity Platform
             </div>
-            <h1 className="mt-6 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-              Detect{" "}
-              <span className="text-blue-500">
-                Fake URLs
+            <h1 className="mt-8 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl xl:text-7xl">
+              Detect
+              <span className="text-cyan-400">
+                {" "}Fake URLs
               </span>
               <br />
-              Before They Fool You
+              &
+              <span className="text-emerald-400">
+                {" "}Malicious QR Codes
+              </span>
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-slate-400 sm:text-lg">
-              Analyze suspicious URLs using AI,
-              Machine Learning,
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-400">
+              Analyze suspicious URLs and QR codes using
+              Artificial Intelligence,
               VirusTotal,
               WHOIS,
-              SSL,
-              DNS,
-              and phishing intelligence in seconds.
+              SSL inspection,
+              DNS analysis
+              and real-time cyber threat intelligence —
+              all from one unified cybersecurity platform.
             </p>
-            <div id="scanner" className="mt-8">
-  <Scanner />
-</div>
-            {/* Feature Chips */}
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div
+              id="scanner"
+              className="mt-10"
+            >
+              <Scanner />
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
               {[
                 "AI Detection",
                 "VirusTotal",
                 "WHOIS",
                 "SSL",
-                "DNS",
+                "QR Guardian",
+                "Threat Feed",
               ].map((chip) => (
                 <span
                   key={chip}
@@ -65,122 +130,60 @@ export default function Hero() {
                 </span>
               ))}
             </div>
-            {/* Stats */}
-           <LiveStats />
+            <LiveStats />
           </motion.div>
+
           {/* RIGHT */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 lg:p-8 shadow-[0_0_70px_rgba(37,99,235,.12)] backdrop-blur-xl">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm text-slate-400">
-                    Threat Intelligence Report
-                  </p>
-                  <h2 className="mt-2 text-5xl font-black text-red-500 sm:text-6xl lg:text-7xl">
-                    92
-                  </h2>
-                  <p className="mt-2 text-red-400 font-medium">
-                    High Risk
-                  </p>
-                </div>
-                <Globe
-                  size={48}
-                  className="text-blue-500 sm:h-16 sm:w-16 lg:h-20 lg:w-20"
-                />
-              </div>
-              <div className="mt-8 h-3 rounded-full bg-slate-800">
-                <div className="h-3 w-[92%] rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-400" />
-              </div>
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <MiniCard
-                  title="AI Confidence"
-                  value="98%"
-                  color="text-blue-400"
-                />
-                <MiniCard
-                  title="Scan Time"
-                  value="0.42s"
-                  color="text-green-400"
-                />
-              </div>
-              <div className="mt-8 space-y-4">
-                <Status
-                  title="VirusTotal"
-                  value="Clean"
-                  icon={<CheckCircle2 className="text-green-400" />}
-                />
-                <Status
-                  title="WHOIS"
-                  value="New Domain"
-                  icon={<AlertTriangle className="text-yellow-400" />}
-                />
-                <Status
-                  title="SSL Certificate"
-                  value="Invalid"
-                  icon={<XCircle className="text-red-400" />}
-                />
-                <Status
-                  title="AI Detection"
-                  value="Phishing Detected"
-                  icon={<Sparkles className="text-blue-400" />}
-                />
-              </div>
-              <button className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 py-3 sm:py-4 font-semibold transition hover:opacity-90">
-                View Full Report
-                <ArrowRight size={18} />
-              </button>
+            <div className="grid gap-5">
+              {platformCards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <motion.div
+                    key={card.title}
+                    whileHover={{
+                      y: -8,
+                      scale: 1.02,
+                    }}
+                    transition={{
+                      duration: 0.25,
+                    }}
+                    className="group rounded-3xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur-xl"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div
+                        className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800 ${card.color}`}
+                      >
+                        <Icon size={32} />
+                      </div>
+                      <ArrowRight
+                        className="text-slate-500 transition duration-300 group-hover:translate-x-1 group-hover:text-cyan-400"
+                      />
+                    </div>
+                    <h3 className="mt-6 text-2xl font-bold text-white">
+                      {card.title}
+                    </h3>
+                    <p className="mt-3 leading-7 text-slate-400">
+                      {card.description}
+                    </p>
+                    <button
+                      onClick={() => handleCardClick(card)}
+                      className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${card.gradient} py-3 font-semibold text-white transition hover:scale-[1.02]`}
+                    >
+                      {card.button}
+                      <ArrowRight size={18} />
+                    </button>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         </div>
       </div>
     </section>
-  );
-}
-
-function Stat({ number, label }) {
-  return (
-    <div className="text-center sm:text-left">
-      <h2 className="text-3xl font-black sm:text-4xl">
-        {number}
-      </h2>
-      <p className="mt-2 text-sm text-slate-500">
-        {label}
-      </p>
-    </div>
-  );
-}
-
-function MiniCard({ title, value, color }) {
-  return (
-    <div className="rounded-2xl bg-slate-800/60 p-4">
-      <p className="text-sm text-slate-400">
-        {title}
-      </p>
-      <h3 className={`mt-2 text-2xl font-bold sm:text-3xl ${color}`}>
-        {value}
-      </h3>
-    </div>
-  );
-}
-
-function Status({ title, value, icon }) {
-  return (
-    <div className="flex items-center justify-between rounded-xl bg-slate-800/60 p-4">
-      <div className="min-w-0">
-        <h4 className="truncate font-medium">
-          {title}
-        </h4>
-        <p className="truncate text-sm text-slate-400">
-          {value}
-        </p>
-      </div>
-      <div className="ml-4 flex-shrink-0">
-        {icon}
-      </div>
-    </div>
   );
 }

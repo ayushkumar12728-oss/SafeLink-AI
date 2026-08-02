@@ -1,3 +1,8 @@
+import { useNavigate } from "react-router-dom";
+import { House, GraduationCap } from "lucide-react";
+
+import Navbar from "../components/layout/Navbar";
+
 import AcademyHero from "../components/academy/AcademyHero";
 import LearningTracks from "../components/academy/LearningTracks";
 import FeaturedCourses from "../components/academy/FeaturedCourses";
@@ -17,28 +22,57 @@ import FooterCTA from "../components/academy/FooterCTA";
 import { AcademyProvider } from "../context/AcademyContext";
 
 const CyberAcademy = () => {
+  const navigate = useNavigate();
+
   return (
     <AcademyProvider>
       <main className="min-h-screen bg-[#030712] text-white">
-        <AcademyHero />
 
-        <LearningTracks />
-        <FeaturedCourses />
-        <TopicGrid />
+        <Navbar />
 
-        <CyberLabs />
-        <QuizPreview />
-        <ProgressTracker />
+        <div className="mx-auto max-w-7xl px-6 pt-24">
 
-        <CertificateGenerator />
+          {/* Header */}
 
-        <ScamAlerts />
-        <DailyTip />
-        <GovernmentResources />
-        <EmergencyHelp />
-        <Downloads />
-        <FAQ />
-        <FooterCTA />
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3 text-white transition hover:border-cyan-500 hover:bg-slate-800"
+            >
+              <House size={18} />
+              Back to Home
+            </button>
+
+            <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-400">
+              <GraduationCap size={16} />
+              Cyber Academy
+            </div>
+
+          </div>
+
+          <AcademyHero />
+
+          <LearningTracks />
+          <FeaturedCourses />
+          <TopicGrid />
+
+          <CyberLabs />
+          <QuizPreview />
+          <ProgressTracker />
+
+          <CertificateGenerator />
+
+          <ScamAlerts />
+          <DailyTip />
+          <GovernmentResources />
+          <EmergencyHelp />
+          <Downloads />
+          <FAQ />
+          <FooterCTA />
+
+        </div>
+
       </main>
     </AcademyProvider>
   );
