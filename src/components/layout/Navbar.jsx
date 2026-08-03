@@ -130,16 +130,9 @@ export default function Navbar() {
             Dashboard
           </button>
 
-          <a
-            href="https://github.com/ayushkumar12728-oss/SafeLink-AI"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-slate-300 transition hover:text-white"
-          >
-            GitHub
-          </a>
-
         </div>
+
+      
 
         {/* Analyze Button */}
 
@@ -226,14 +219,7 @@ export default function Navbar() {
 
           </button>
 
-          <a
-            href="https://github.com/ayushkumar12728-oss/SafeLink-AI"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 block rounded-lg px-3 py-3 text-slate-300 hover:bg-slate-800"
-          >
-            GitHub
-          </a>
+         
 
         </div>
 
