@@ -1,5 +1,4 @@
 import os
-import time
 import requests
 from dotenv import load_dotenv
 
@@ -13,96 +12,73 @@ def check_urlscan(url: str):
     if not API_KEY:
         return {
             "available": False,
-            "error": "URLSCAN_API_KEY not found"
+            "error": "URLSCAN_API_KEY not found",
         }
 
     headers = {
         "API-Key": API_KEY,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
 
     try:
-        # Submit URL for scanning
+
         submit = requests.post(
             "https://urlscan.io/api/v1/scan/",
             headers=headers,
             json={
                 "url": url,
-                "visibility": "public"
+                "visibility": "public",
             },
-            timeout=30
+            timeout=8,
         )
 
-        print("Submit Status:", submit.status_code)
-        print("Submit Response:", submit.text)
-
-        if submit.status_code not in [200, 201]:
+        if submit.status_code not in (200, 201):
             return {
                 "available": False,
-                "error": submit.text
+                "error": "Submission failed",
             }
 
-        submit_json = submit.json()
-
-        result_api = submit_json.get("api")
+        result_api = submit.json().get("api")
 
         if not result_api:
             return {
                 "available": False,
-                "error": "Result API URL not returned by URLScan."
+                "error": "Result API not returned",
             }
 
-        # Wait for analysis to complete
-        for attempt in range(15):
+        # Only ONE quick fetch
+        result = requests.get(
+            result_api,
+            headers=headers,
+            timeout=8,
+        )
 
-            print(f"Polling attempt {attempt + 1}")
+        if result.status_code != 200:
+            return {
+                "available": False,
+                "status": "processing",
+            }
 
-            result = requests.get(
-                result_api,
-                headers=headers,
-                timeout=30
-            )
+        data = result.json()
 
-            print("Result Status:", result.status_code)
-
-            if result.status_code == 200:
-
-                data = result.json()
-
-                page = data.get("page", {})
-                task = data.get("task", {})
-                verdicts = data.get("verdicts", {})
-
-                return {
-                    "available": True,
-                    "page_title": page.get("title"),
-                    "final_url": page.get("url"),
-                    "server": page.get("server"),
-                    "ip": page.get("ip"),
-                    "country": page.get("country"),
-                    "asn": page.get("asn"),
-                    "screenshot": task.get("screenshotURL"),
-                    "overall_verdict": verdicts.get("overall", {})
-                }
-
-            elif result.status_code == 404:
-                # Still processing
-                time.sleep(3)
-                continue
-
-            else:
-                return {
-                    "available": False,
-                    "error": result.text
-                }
+        page = data.get("page", {})
+        task = data.get("task", {})
+        verdicts = data.get("verdicts", {})
 
         return {
-            "available": False,
-            "error": "Analysis timeout (45 seconds)"
+            "available": True,
+            "page_title": page.get("title"),
+            "final_url": page.get("url"),
+            "server": page.get("server"),
+            "ip": page.get("ip"),
+            "country": page.get("country"),
+            "asn": page.get("asn"),
+            "screenshot": task.get("screenshotURL"),
+            "overall_verdict": verdicts.get("overall", {}),
         }
 
     except Exception as e:
         return {
             "available": False,
-            "error": str(e)
+            "error": str(e),
         }

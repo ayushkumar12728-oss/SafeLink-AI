@@ -11,16 +11,22 @@ from services.urlscan_checker import check_urlscan
 from services.risk_engine import calculate_risk
 from services.ai_summary import generate_ai_summary
 
-router = APIRouter(prefix="/api", tags=["scan"])
+router = APIRouter(
+    prefix="/api",
+    tags=["scan"],
+)
 
 
 @router.post("/scan")
 async def scan_url(payload: dict):
 
-    raw_url = payload.get("url")
+    raw_url = payload.get("url", "").strip()
 
     if not raw_url:
-        raise HTTPException(status_code=400, detail="URL is required.")
+        raise HTTPException(
+            status_code=400,
+            detail="URL is required.",
+        )
 
     try:
         validated = normalize_and_validate_url(raw_url)
@@ -29,20 +35,48 @@ async def scan_url(payload: dict):
         hostname = validated["hostname"]
 
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        )
 
-    # ----------------------------
-    # Async wrapper for sync functions
-    # ----------------------------
     async def run_sync(func, *args):
         return await asyncio.to_thread(func, *args)
 
-    ssl_task = run_sync(check_ssl, normalized_url)
-    whois_task = check_whois(hostname)
-    dns_task = run_sync(check_dns, normalized_url)
-    http_task = run_sync(check_http, normalized_url)
-    vt_task = run_sync(check_virustotal, normalized_url)
-    urlscan_task = run_sync(check_urlscan, normalized_url)
+    def safe(result, fallback):
+        if isinstance(result, Exception):
+            return fallback
+        return result
+
+    ssl_task = asyncio.wait_for(
+        run_sync(check_ssl, normalized_url),
+        timeout=5,
+    )
+
+    whois_task = asyncio.wait_for(
+        check_whois(hostname),
+        timeout=5,
+    )
+
+    dns_task = asyncio.wait_for(
+        run_sync(check_dns, normalized_url),
+        timeout=5,
+    )
+
+    http_task = asyncio.wait_for(
+        run_sync(check_http, normalized_url),
+        timeout=5,
+    )
+
+    vt_task = asyncio.wait_for(
+        run_sync(check_virustotal, normalized_url),
+        timeout=10,
+    )
+
+    urlscan_task = asyncio.wait_for(
+        run_sync(check_urlscan, normalized_url),
+        timeout=10,
+    )
 
     (
         ssl_info,
@@ -60,11 +94,6 @@ async def scan_url(payload: dict):
         urlscan_task,
         return_exceptions=True,
     )
-
-    def safe(result, default):
-        if isinstance(result, Exception):
-            return default
-        return result
 
     ssl_info = safe(
         ssl_info,
@@ -106,6 +135,8 @@ async def scan_url(payload: dict):
             "available": False,
             "malicious": 0,
             "suspicious": 0,
+            "harmless": 0,
+            "undetected": 0,
         },
     )
 
@@ -116,19 +147,15 @@ async def scan_url(payload: dict):
         },
     )
 
-    # ----------------------------
-    # Calculate Risk
-    # ----------------------------
-
     risk = calculate_risk(
-    ssl_info,
-    whois_info,
-    dns_info,
-    http_info,
-    virustotal_info,
-    urlscan_info,
-    normalized_url,
-)
+        ssl_info,
+        whois_info,
+        dns_info,
+        http_info,
+        virustotal_info,
+        urlscan_info,
+        normalized_url,
+    )
 
     ai = generate_ai_summary(
         ssl_info,
@@ -141,10 +168,14 @@ async def scan_url(payload: dict):
 
     return {
         "success": True,
+
         "normalized_url": normalized_url,
         "domain": hostname,
 
         "risk": risk,
+        "risk_score": risk["score"],
+        "verdict": risk["level"],
+
         "ai": ai,
 
         "ssl": ssl_info,
@@ -153,7 +184,4 @@ async def scan_url(payload: dict):
         "http": http_info,
         "virustotal": virustotal_info,
         "urlscan": urlscan_info,
-
-        "risk_score": risk["score"],
-        "verdict": risk["level"],
     }

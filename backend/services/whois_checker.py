@@ -1,10 +1,14 @@
 import whois
 from datetime import datetime, timezone
+import asyncio
 
 
 async def check_whois(hostname: str) -> dict:
     try:
-        w = whois.whois(hostname)
+        w = await asyncio.to_thread(
+            whois.whois,
+            hostname,
+        )
 
         creation_date = w.creation_date
         if isinstance(creation_date, list):
