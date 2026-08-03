@@ -4,7 +4,7 @@ import { House, GraduationCap } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 
 import AcademyHero from "../components/academy/AcademyHero";
-import LearningTracks from "../components/academy/LearningTracks";
+
 import FeaturedCourses from "../components/academy/FeaturedCourses";
 import TopicGrid from "../components/academy/TopicGrid";
 import CyberLabs from "../components/academy/CyberLabs";
@@ -17,7 +17,7 @@ import GovernmentResources from "../components/academy/GovernmentResources";
 import EmergencyHelp from "../components/academy/EmergencyHelp";
 import Downloads from "../components/academy/Downloads";
 import FAQ from "../components/academy/FAQ";
-import FooterCTA from "../components/academy/FooterCTA";
+//import FooterCTA from "../components/academy/FooterCTA";
 
 import { AcademyProvider } from "../context/AcademyContext";
 
@@ -53,15 +53,13 @@ const CyberAcademy = () => {
 
           <AcademyHero />
 
-          <LearningTracks />
+          
           <FeaturedCourses />
           <TopicGrid />
 
           <CyberLabs />
           <QuizPreview />
-          <ProgressTracker />
-
-          <CertificateGenerator />
+          
 
           <ScamAlerts />
           <DailyTip />
@@ -69,7 +67,7 @@ const CyberAcademy = () => {
           <EmergencyHelp />
           <Downloads />
           <FAQ />
-          <FooterCTA />
+          
 
         </div>
 

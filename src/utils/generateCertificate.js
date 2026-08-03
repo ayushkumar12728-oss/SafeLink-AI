@@ -11,70 +11,207 @@ export function generateCertificate({
   const width = doc.internal.pageSize.getWidth();
   const height = doc.internal.pageSize.getHeight();
 
+  // ===========================
   // Background
+  // ===========================
   doc.setFillColor(248, 250, 252);
   doc.rect(0, 0, width, height, "F");
 
-  // Border
+  // ===========================
+  // Double Border
+  // ===========================
   doc.setDrawColor(16, 185, 129);
   doc.setLineWidth(2);
   doc.rect(10, 10, width - 20, height - 20);
 
+  doc.setLineWidth(0.5);
+  doc.rect(15, 15, width - 30, height - 30);
+
+  // ===========================
+  // Watermark
+  // ===========================
+  doc.setTextColor(235, 235, 235);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(55);
+
+  doc.text("SAFELINK AI", width / 2, height / 2 + 10, {
+    align: "center",
+    angle: 30,
+  });
+
+  // Reset text color
+  doc.setTextColor(0, 0, 0);
+
+  // ===========================
+  // Title
+  // ===========================
+  doc.setTextColor(16, 185, 129);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(30);
+
   doc.text("CERTIFICATE OF COMPLETION", width / 2, 35, {
     align: "center",
   });
 
+  // ===========================
+  // Subtitle
+  // ===========================
+  doc.setTextColor(100);
   doc.setFont("helvetica", "normal");
+  doc.setFontSize(13);
+
+  doc.text(
+    "Recognizing Excellence in Cybersecurity Awareness",
+    width / 2,
+    45,
+    {
+      align: "center",
+    }
+  );
+
+  doc.setTextColor(0);
+
+  // ===========================
+  // Presented To
+  // ===========================
   doc.setFontSize(16);
 
-  doc.text("This Certificate is Proudly Presented To", width / 2, 55, {
-    align: "center",
-  });
+  doc.text(
+    "This Certificate is Proudly Presented To",
+    width / 2,
+    60,
+    {
+      align: "center",
+    }
+  );
 
+  // ===========================
+  // Student Name
+  // ===========================
   doc.setFont("helvetica", "bold");
   doc.setFontSize(30);
 
-  doc.text(name.toUpperCase(), width / 2, 78, {
+ const studentName = (name || "Participant").toUpperCase();
+
+doc.text(studentName, width / 2, 80, {
+  align: "center",
+});
+
+  doc.line(70, 84, width - 70, 84);
+
+  // ===========================
+  // Description
+  // ===========================
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(15);
+
+  doc.text(
+    "For successfully completing the SafeLink AI Cyber Academy training program",
+    width / 2,
+    98,
+    {
+      align: "center",
+    }
+  );
+
+  doc.text(
+    "and demonstrating knowledge in phishing detection, URL security analysis,",
+    width / 2,
+    107,
+    {
+      align: "center",
+    }
+  );
+
+  doc.text(
+    "and cybersecurity best practices.",
+    width / 2,
+    116,
+    {
+      align: "center",
+    }
+  );
+
+  // ===========================
+  // Statistics
+  // ===========================
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+
+  doc.text(`Lessons Completed : ${lessons}`, width / 2, 135, {
     align: "center",
   });
 
-  doc.line(70, 82, width - 70, 82);
+  doc.text(`Quiz Score : ${quizzes}`, width / 2, 145, {
+    align: "center",
+  });
 
-  doc.setFontSize(16);
-  doc.setFont("helvetica", "normal");
+  doc.text(`Overall Completion : ${completion}%`, width / 2, 155, {
+    align: "center",
+  });
 
-  doc.text(
-    "For successfully completing the SafeLink AI Cyber Academy.",
-    width / 2,
-    100,
-    { align: "center" }
-  );
-
-  doc.setFontSize(18);
-
-  doc.text(`Lessons Completed : ${lessons}`, 35, 125);
-  doc.text(`Quiz Score : ${quizzes}`, 35, 140);
-  doc.text(`Overall Completion : ${completion}%`, 35, 155);
-
+  // ===========================
+  // Certificate ID
+  // ===========================
   const certId =
     "SLAI-" +
     new Date().getFullYear() +
     "-" +
-    Math.floor(Math.random() * 100000);
+    Math.random().toString(36).substring(2, 10).toUpperCase();
 
-  doc.text(`Certificate ID : ${certId}`, 35, 180);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+
+  doc.text(`Certificate ID : ${certId}`, 25, 185);
 
   doc.text(
-    `Issued : ${new Date().toLocaleDateString()}`,
-    width - 90,
-    180
+    `Issued : ${new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })}`,
+    width - 85,
+    185
   );
 
+  // ===========================
+  // Signature
+  // ===========================
+  doc.line(width - 90, 170, width - 30, 170);
+
   doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
 
-  doc.text("SafeLink AI", width - 70, 160);
+  doc.text("SafeLink AI", width - 60, 165, {
+    align: "center",
+  });
 
-  doc.save(`${name.replace(/\s+/g, "_")}_Certificate.pdf`);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+
+  doc.text("Authorized Signature", width - 60, 176, {
+    align: "center",
+  });
+
+  // ===========================
+  // Footer
+  // ===========================
+  doc.setFontSize(10);
+  doc.setTextColor(120);
+
+  doc.text(
+    "This certificate has been digitally generated by SafeLink AI Cyber Academy.",
+    width / 2,
+    198,
+    {
+      align: "center",
+    }
+  );
+
+  // ===========================
+  // Save PDF
+  // ===========================
+  doc.save(
+  `${(name || "Participant").replace(/\s+/g, "_")}_SafeLinkAI_Certificate.pdf`
+);
 }

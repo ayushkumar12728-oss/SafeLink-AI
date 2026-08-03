@@ -17,6 +17,7 @@
     "html5-qrcode": "^2.3.8",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
+    "jsqr": "^1.4.0",
     "lucide-react": "^1.26.0",
     "react": "^19.2.7",
     "react-circular-progressbar": "^2.2.0",

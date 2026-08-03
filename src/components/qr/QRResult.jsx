@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   Globe,
   CreditCard,
@@ -7,9 +8,12 @@ import {
   MessageSquare,
   ShieldAlert,
   ShieldCheck,
+  ArrowRight,
 } from "lucide-react";
 
 export default function QRResult({ data }) {
+  const navigate = useNavigate();
+
   if (!data) return null;
 
   let type = "Unknown";
@@ -56,11 +60,9 @@ export default function QRResult({ data }) {
         <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-xl">
 
           <div className="flex items-center gap-4">
-
             {icon}
 
             <div>
-
               <h2 className="text-3xl font-bold text-white">
                 {title}
               </h2>
@@ -68,9 +70,7 @@ export default function QRResult({ data }) {
               <p className={`${color} mt-2`}>
                 {type}
               </p>
-
             </div>
-
           </div>
 
           <div className="mt-8 rounded-2xl bg-slate-950 p-6">
@@ -88,24 +88,34 @@ export default function QRResult({ data }) {
           <div className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-6">
 
             <div className="flex items-center gap-3">
-
               <ShieldCheck className="text-emerald-400" />
 
               <h3 className="font-semibold text-emerald-400">
                 SafeLink AI Recommendation
               </h3>
-
             </div>
 
             <p className="mt-4 text-slate-300">
-
               Always verify the destination before opening
               links, making UPI payments or connecting to
               unknown Wi-Fi networks.
-
             </p>
 
           </div>
+
+          {type === "Website URL" && (
+            <button
+              onClick={() => {
+  if (data.startsWith("http")) {
+    navigate(`/analyze?url=${encodeURIComponent(data)}`);
+  }
+}}
+              className="mt-8 flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-4 font-semibold text-slate-950 transition hover:scale-105"
+            >
+              Analyze with SafeLink AI
+              <ArrowRight size={18} />
+            </button>
+          )}
 
         </div>
 

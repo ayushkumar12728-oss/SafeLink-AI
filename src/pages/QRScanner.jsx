@@ -12,9 +12,12 @@ export default function QRScanner() {
 
   const navigate = useNavigate();
 
+  const handleScan = (decodedText) => {
+    setResult(decodedText);
+  };
+
   return (
     <main className="min-h-screen bg-[#020617] text-white">
-
       <Navbar />
 
       <div className="mx-auto max-w-7xl px-6 pt-24">
@@ -39,16 +42,11 @@ export default function QRScanner() {
 
         <QRHero />
 
-        <QRUpload
-          onScan={setResult}
-        />
+        <QRUpload onScan={handleScan} />
 
-        <QRResult
-          data={result}
-        />
+        <QRResult data={result} />
 
       </div>
-
     </main>
   );
 }

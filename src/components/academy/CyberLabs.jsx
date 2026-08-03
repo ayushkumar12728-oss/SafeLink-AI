@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import {
   Search,
   ShieldCheck,
   Globe,
   Bot,
-  ArrowRight,
   CheckCircle2,
 } from "lucide-react";
 
@@ -104,22 +102,8 @@ export default function CyberLabs() {
               </motion.div>
             );
           })}
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-20 text-center"
-        >
-          <Link
-            to="/analyze"
-            className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-4 font-semibold text-black transition hover:scale-105"
-          >
-            Launch Cyber Lab
-            <ArrowRight size={20} />
-          </Link>
-        </motion.div>
+        </div>
 
       </div>
     </section>
